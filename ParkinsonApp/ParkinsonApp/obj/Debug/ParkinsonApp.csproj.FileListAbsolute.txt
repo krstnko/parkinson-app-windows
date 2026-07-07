@@ -1,2 +1,0 @@
-C:\Users\krist\source\repos\parkinson-app-windows\ParkinsonApp\ParkinsonApp\obj\Debug\ParkinsonApp.csproj.AssemblyReference.cache
-C:\Users\krist\source\repos\parkinson-app-windows\ParkinsonApp\ParkinsonApp\obj\Debug\ParkinsonApp.csproj.CoreCompileInputs.cache
