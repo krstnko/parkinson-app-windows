@@ -1,93 +1,160 @@
-# parkinson-app-windows
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+# ParkinsonAppWindows
+ 
+A Windows desktop application for **visualizing, analyzing, and exporting handwriting drawings** (e.g. spirals and lines drawn on a graphics tablet) to support the detection of Parkinson's disease.
+ 
+The app loads pen-movement recordings (coordinates, pressure, tilt, azimuth), renders them as rich visualizations, extracts a set of biomechanical features, and runs them through an ensemble of ONNX machine-learning models to produce a probability of the disease.
+ 
+> ⚠️ **Disclaimer:** This is an educational/research tool and is **not a medical device**. Its output must not be used for actual diagnosis.
+ 
+---
+ 
+## Screenshot
+ 
+![Parkinson Analysis App](docs/screenshot.png)
+ 
+*Loaded spiral drawings with color-coded pen data (left), the detailed analysis window with the ONNX model ensemble and per-model probabilities (right).*
+ 
+---
+ 
+## Features
+ 
+- **Data loading** from JSON recordings (multiple sessions at once).
+- **Visualization** of the pen trajectory on a custom-rendered canvas (`DrawingCanvas`) with:
+  - configurable line **thickness** parameter (pressure, velocity, etc.);
+  - configurable line **color** parameter (azimuth, tilt, etc.);
+  - grid, legend, and light/dark theme support.
+- **Animation** of the drawing over time (replays the stroke as it was drawn, ~60 FPS).
+- **Feature extraction** (`FeatureExtractor`) — 20 pen-movement features (pressure, velocity, acceleration, tremor/shake, etc.).
+- **ML inference** via an ensemble of **ONNX models** (`OnnxService`), averaging the probabilities into a final `PARKINSON` / `HEALTHY` verdict.
+- **Export** of results to **PNG** (raster), **SVG** (vector), and a **PDF** report.
+---
+ 
+## Tech Stack
+ 
+- **.NET 10** (`net10.0-windows`)
+- **WPF** with the **MVVM** architecture
+- [Microsoft.ML.OnnxRuntime](https://onnxruntime.ai/) `1.23.2` — ML model inference
+- [MathNet.Numerics](https://numerics.mathdotnet.com/) `5.0.0` — numerical feature computation
+---
+ 
+## Project Structure
+ 
 ```
-cd existing_repo
-git remote add origin https://gitlab.cs.taltech.ee/krduna/parkinson-app-windows.git
-git branch -M main
-git push -uf origin main
+ParkinsonAppWindows/
+├── App.xaml                # Entry point, global resources/styles
+├── MainWindow.xaml         # Main window (session list, toolbar)
+├── Controls/
+│   ├── DrawingCanvas.cs    # Custom element that renders the pen trajectory
+│   └── LegendControl.xaml  # Color/thickness legend
+├── Converters/
+│   └── ValueConverters.cs  # XAML binding converters (theme, visibility, etc.)
+├── Helpers/
+│   └── ColorHelper.cs      # Color utilities
+├── Models/                 # Data models (DrawingDataFile, DrawingPoint, DrawingParameter …)
+├── Services/
+│   ├── FeatureExtractor.cs # Extracts 20 features from the trajectory
+│   ├── OnnxService.cs      # Runs ONNX model inference
+│   ├── BitmapExporter.cs   # PNG export
+│   ├── SvgExporter.cs      # SVG export
+│   └── SimplePdfExporter.cs# PDF report export
+├── ViewModels/
+│   ├── MainViewModel.cs    # Main window logic, file loading
+│   ├── SessionViewModel.cs # A single loaded session/drawing
+│   ├── DetailViewModel.cs  # Detailed analysis + ONNX ensemble
+│   ├── ExportViewModel.cs  # Export logic
+│   └── RelayCommand.cs     # ICommand implementation for MVVM
+├── Views/
+│   ├── DetailWindow.xaml   # Detailed analysis window
+│   └── ExportWindow.xaml   # Export window
+└── ModelsONNX/             # Trained ONNX models (not in the repo — see below)
 ```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.cs.taltech.ee/krduna/parkinson-app-windows/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
+ 
+---
+ 
+## Machine Learning Models
+ 
+The app looks for a `ModelsONNX` folder next to the executable and loads **all** `*.onnx` files from it, then averages their predictions (ensemble).
+ 
+Expected models (two groups — `filter_*` and `wrapper_*` — for different algorithms):
+ 
+```
+filter_DT.onnx    wrapper_DT.onnx     # Decision Tree
+filter_KNN.onnx   wrapper_KNN.onnx    # K-Nearest Neighbors
+filter_LR.onnx    wrapper_LR.onnx     # Logistic Regression
+filter_RF.onnx    wrapper_RF.onnx     # Random Forest
+filter_SVM.onnx   wrapper_SVM.onnx    # Support Vector Machine
+```
+ 
+Each model takes a vector of **20 features** (order defined in `FeatureExtractor.FEATURES_ORDER`) and returns the probability of the "Parkinson" class. The final probability is the mean across all models; the verdict is `PARKINSON` when the value is ≥ 50%.
+ 
+---
+ 
+## Input Data Format
+ 
+The app reads `.json` files with the following structure (deserialized into `DrawingDataFile`):
+ 
+```json
+{
+  "Data": [
+    [
+      { "T": 0.0, "X": 120.5, "Y": 340.2, "P": 512, "A": 1200, "L": 700 }
+    ]
+  ]
+}
+```
+ 
+where `Data` is a list of strokes, and each stroke is a list of points:
+ 
+| Field | Meaning |
+|-------|---------|
+| `T`   | Timestamp of the point |
+| `X`   | X coordinate |
+| `Y`   | Y coordinate |
+| `P`   | Pen pressure |
+| `A`   | Pen azimuth |
+| `L`   | Pen tilt (altitude) |
+ 
+---
+ 
+## Getting Started
+ 
+### Requirements
+- Windows
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- Visual Studio 2022+ (or newer) with .NET / WPF support
+### Build & Run
+ 
+```bash
+# Clone the repository
+git clone <repository-URL>
+cd parkinson-app-windows/ParkinsonAppWindows
+ 
+# Restore dependencies and build
+dotnet restore
+dotnet build
+ 
+# Run
+dotnet run
+```
+ 
+ 
+---
+ 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+ 
+1. Click **Load Files** and select one or more `.json` drawing files.
+2. Adjust the visualization — pick the **color** and **thickness** parameters, toggle animation and grid.
+3. Open the detailed analysis to run the ONNX ensemble and view the per-model probability and the final verdict.
+4. Optionally export the result to **PNG**, **SVG**, or **PDF**.
+---
+ 
+## Credits
+ 
+Built as a student project (TalTech, Computer Science).
+ 
+- **Application, visualization & ML integration** — *Kristiina Dunajeva*
+  (WPF/.NET app, custom spiral rendering, MVVM architecture, feature extraction, ONNX inference integration, PNG/SVG/PDF export)
+- **ONNX model training** — *teammate*
+- **Dataset & project concept** — *course supervisor, Taltech*
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
