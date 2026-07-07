@@ -1,0 +1,35 @@
+﻿<Application x:Class="ParkinsonAppWindows.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:ParkinsonAppWindows.Converters"
+             xmlns:local="clr-namespace:ParkinsonAppWindows"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+        <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter"/>
+        <converters:BoolToPlayPauseConverter x:Key="BoolToPlayPauseConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:ModeToColorConverter x:Key="ModeToColorConverter"/>
+        <converters:ModeToToolbarColorConverter x:Key="ModeToToolbarColorConverter"/>
+        <converters:ModeToTextColorConverter x:Key="ModeToTextColorConverter"/>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+
+        <converters:BooleanToBrushConverter x:Key="BooleanToBrushConverter"/>
+
+        <converters:StringToVisConverter x:Key="StringToVisConverter"/>
+
+        <converters:CollectionToVisConverter x:Key="CollectionToVisConverter"/>
+
+        <converters:PlayPauseTextConverter x:Key="PlayPauseTextConverter"/>
+
+        <converters:ProbToWidthConverter x:Key="ProbToWidthConverter"/>
+
+        <converters:BrushToTranslucentConverter x:Key="BrushToTranslucentConverter"/>
+
+    </Application.Resources>
+</Application>
